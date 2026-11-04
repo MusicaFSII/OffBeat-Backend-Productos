@@ -1,0 +1,6 @@
+package com.productos.controller;
+
+
+public class ProductoController {
+
+}
