@@ -5,10 +5,18 @@ import java.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.productos.dto.ProductoDTO;
+import com.productos.model.Categoria;
 import com.productos.model.Producto;
+import com.productos.repository.CategoriaRepository;
 
 @Component 
 public class ProductoMapper {
+
+    private final CategoriaRepository categoriaRepository;
+
+    public ProductoMapper(CategoriaRepository categoriaRepository) {
+        this.categoriaRepository = categoriaRepository;
+    }
 
     public Producto toEntity(ProductoDTO dto){
         if(dto == null){
@@ -33,7 +41,8 @@ public class ProductoMapper {
             }
         }
 
-        producto.setCategoriaId(dto.getCategoriaId());
+        Categoria categoria = categoriaRepository.findByCodigoCategoria(dto.getCodigoCategoria());
+        producto.setCategoria(categoria);
         
         if(dto.getEnOferta() !=null && !dto.getEnOferta().isEmpty()){
             if(dto.getEnOferta().equalsIgnoreCase("si")){

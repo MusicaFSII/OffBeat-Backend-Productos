@@ -2,6 +2,7 @@ package com.productos.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,7 +12,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.FetchType;
 
 @Entity 
 @Table(name="Productos")
@@ -19,9 +19,9 @@ import jakarta.persistence.FetchType;
 @NoArgsConstructor 
 @AllArgsConstructor 
 public class Producto {
+    
     @Id 
-    @GeneratedValue(strategy=GenerationType.AUTO)
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_producto")
     private int idProducto;
 
@@ -43,9 +43,6 @@ public class Producto {
     @Column(name="imagen_producto", columnDefinition = "BLOB")
     private byte[] imagenProducto;
 
-    @Column(name="categoria_id")
-    private int categoriaId;
-
     @Column(name="en_oferta")
     private boolean enOferta;
 
@@ -53,7 +50,6 @@ public class Producto {
     private int porcOferta;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id", nullable = false)
-    private Categorias categoria;
-
+    @JoinColumn(name = "codigo_categoria", referencedColumnName = "codigo_categoria", nullable = false)
+    private Categoria categoria;
 }

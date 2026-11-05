@@ -1,7 +1,6 @@
 package com.productos.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ public class ProductoService {
     private ProductoRepository productoRepo;
     private ProductoMapper productoMapper;
 
-    /*##-------------------------------METODOS PARA OBTENER PRODUCTOS (GET)-------------------------------*/
+    /*##-------------------------------METODOS PARA OBTENER PRODUCTOS (GET)-------------------------------##*/
 
     /*------------Método para obtener todos los productos------------*/
     public List<Producto> obtenerProductos(){
@@ -31,8 +30,8 @@ public class ProductoService {
     }
 
     /*------------Método para obtener productos por id de categoría------------*/
-    public List<Producto> obtenerProductosByIdCategoria(int idCategoria){
-        return productoRepo.findByIdCategoria(idCategoria);
+    public List<Producto> obtenerProductosByCodigoCategoria(String codigoCategoria){
+        return productoRepo.findByCodigoCategoria(codigoCategoria);
     }
 
     /*------------Método para obtener productos que tiene ofertas activas------------*/
@@ -48,8 +47,9 @@ public class ProductoService {
         return productoRepo.save(producto);
     }
 
-    /*##-------------------------------METODOS PARA ACTUALIZAR PRODUCTOS (PUT)-------------------------------*/
+    /*##-------------------------------METODOS PARA ACTUALIZAR PRODUCTOS (PUT)-------------------------------##*/
 
+    /*------------Método para actualizar productos------------*/
     public Producto actualizarProducto(String codigo, ProductoDTO dto){
         Producto existing = productoRepo.findByCodigo(codigo);
         if(existing == null){
@@ -63,5 +63,13 @@ public class ProductoService {
         productoActualizar.setImagenProducto(existing.getImagenProducto());
         }
         return productoRepo.save(productoActualizar);
+    }
+
+    /*##-------------------------------METODOS PARA ELIMINAR PRODUCTOS (DELETE)-------------------------------##*/
+
+    /*------------Método para eliminar productos------------*/
+    public String eliminarProducto(String codigo){
+        productoRepo.deleteByCodigo(codigo);
+        return "El producto" + codigo + "ha sido eliminado";
     }
 }
