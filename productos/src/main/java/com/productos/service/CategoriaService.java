@@ -24,10 +24,12 @@ public class CategoriaService {
     /*------------Método para agregar nuevas categorías------------*/
     public Categoria agregarCategorias(CategoriaDTO dto){
         Categoria cate = new Categoria();
-        cate.setIdCategoria(cate.getIdCategoria());
-        cate.setCodigoCategoria("CAT-"+ String.valueOf(cate.getIdCategoria()));
         cate.setNombreCategoria(dto.getNombre());
-        return categoriaRepo.save(cate);
+
+        Categoria guardada = categoriaRepo.save(cate);   
+
+        guardada.setCodigoCategoria("CAT-" + guardada.getIdCategoria());
+        return categoriaRepo.save(guardada);
     }
 
     /*------------Método para actualizar categorías------------*/

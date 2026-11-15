@@ -17,7 +17,7 @@ import com.productos.model.Categoria;
 import com.productos.service.CategoriaService;
 
 @RestController 
-@RequestMapping("/api/categorias")
+@RequestMapping("/api/v1/categorias")
 public class CategoriaController {
 
     private final CategoriaService categoriaService;

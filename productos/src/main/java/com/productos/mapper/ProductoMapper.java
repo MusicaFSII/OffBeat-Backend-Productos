@@ -1,7 +1,5 @@
 package com.productos.mapper;
 
-import java.util.Base64;
-
 import org.springframework.stereotype.Component;
 
 import com.productos.dto.ProductoDTO;
@@ -25,21 +23,11 @@ public class ProductoMapper {
 
         Producto producto = new Producto();
 
-        producto.setCodigo(dto.getCodigo());
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
         producto.setPrecio(dto.getPrecio());
         producto.setStock(dto.getStock());
-
-        if(dto.getImagenUrl() != null && !dto.getImagenUrl().isEmpty()){
-            try {
-                String base64Data = dto.getImagenUrl();
-                byte[] imagenBytes = Base64.getDecoder().decode(base64Data);
-                producto.setImagenProducto(imagenBytes);
-            } catch (Exception e) {
-                producto.setImagenProducto(null);
-            }
-        }
+        producto.setImagenProducto(dto.getImagenUrl());
 
         Categoria categoria = categoriaRepository.findByCodigoCategoria(dto.getCodigoCategoria());
         producto.setCategoria(categoria);
@@ -52,7 +40,7 @@ public class ProductoMapper {
             }
         } 
 
-        producto.setPorcOferta(dto.getPorcOferta()); 
+        producto.setPorcOferta(dto.getPorcOferta() != null ? dto.getPorcOferta() : 0); 
 
         return producto;
     } 

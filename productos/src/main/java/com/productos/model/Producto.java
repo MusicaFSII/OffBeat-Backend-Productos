@@ -22,28 +22,28 @@ public class Producto {
     
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_producto")
+    @Column(name="id_producto", nullable =false)
     private int idProducto;
 
-    @Column(name="codigo")
+    @Column(name="codigo", unique = true)
     private String codigo;
 
-    @Column(name="nombre")
+    @Column(name="nombre", unique = true, nullable =false)
     private String nombre;
 
-    @Column(name="descripcion")
+    @Column(name="descripcion", nullable =false)
     private String descripcion;
 
-    @Column(name="precio")
+    @Column(name="precio", nullable =false)
     private Double precio;    
 
-    @Column(name="stock")
+    @Column(name="stock", nullable =false)
     private int stock = 0;
 
-    @Column(name="imagen_producto", columnDefinition = "BLOB")
-    private byte[] imagenProducto;
+    @Column(name="imagen_producto", nullable =false)
+    private String imagenProducto;
 
-    @Column(name="en_oferta")
+    @Column(name="en_oferta", nullable =false)
     private boolean enOferta;
 
     @Column(name="porc_oferta")

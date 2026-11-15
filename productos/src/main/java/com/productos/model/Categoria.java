@@ -2,6 +2,8 @@ package com.productos.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,12 +29,13 @@ public class Categoria {
     @Column(name="id_categoria")
     private int idCategoria;
 
-    @Column(name="codigo_categoria", unique = true, nullable = false)
+    @Column(name="codigo_categoria", unique = true)
     private String codigoCategoria;
 
-    @Column(name="nombre_categoria")
+    @Column(name="nombre_categoria", unique = true, nullable = false)
     private String nombreCategoria;
 
+    @JsonIgnore 
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Producto> productos;
 }

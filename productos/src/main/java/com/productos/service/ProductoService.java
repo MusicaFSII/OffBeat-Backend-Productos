@@ -1,10 +1,12 @@
 package com.productos.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.productos.dto.ProdAgregarDTO;
 import com.productos.dto.ProductoDTO;
 import com.productos.mapper.ProductoMapper;
 import com.productos.model.Producto;
@@ -15,6 +17,8 @@ public class ProductoService {
 
     @Autowired 
     private ProductoRepository productoRepo;
+
+    @Autowired 
     private ProductoMapper productoMapper;
 
     /*##-------------------------------METODOS PARA OBTENER PRODUCTOS (GET)-------------------------------##*/
@@ -39,12 +43,28 @@ public class ProductoService {
         return productoRepo.findProductosOfertas();
     }
 
+
     /*##-------------------------------METODOS PARA AGREGAR PRODUCTOS (POST)-------------------------------*/
 
     /*------------Método para agregar nuevos productos------------*/
     public Producto registrarProducto(ProductoDTO dto){
         Producto producto = productoMapper.toEntity(dto);
-        return productoRepo.save(producto);
+        Producto guardado = productoRepo.save(producto);
+
+        guardado.setCodigo("PR-"+guardado.getIdProducto());
+        return productoRepo.save(guardado);
+    }
+
+    /*------------Método para agregar productos a compras-----------*/
+    public List<ProdAgregarDTO> obtenerPorCodigos(List<String> codigos) {
+        List<Producto> prods = productoRepo.findByCodigoIn(codigos);
+        return prods.stream()
+                .map(p -> new ProdAgregarDTO(
+                    p.getCodigo(),
+                    p.getNombre(),
+                    p.getPrecio()
+                ))
+                .collect(Collectors.toList());
     }
 
     /*##-------------------------------METODOS PARA ACTUALIZAR PRODUCTOS (PUT)-------------------------------##*/
@@ -70,6 +90,6 @@ public class ProductoService {
     /*------------Método para eliminar productos------------*/
     public String eliminarProducto(String codigo){
         productoRepo.deleteByCodigo(codigo);
-        return "El producto" + codigo + "ha sido eliminado";
+        return "El producto " + codigo + " ha sido eliminado";
     }
 }

@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.productos.dto.ProdAgregarDTO;
 import com.productos.dto.ProductoDTO;
 import com.productos.model.Producto;
 import com.productos.service.ProductoService;
 
+import jakarta.validation.Valid;
+
 @RestController 
-@RequestMapping("/api/productos")
+@RequestMapping("/api/v1/productos")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -60,9 +63,16 @@ public class ProductoController {
 
     /*------------Método para guardar nuevos productos------------*/
     @PostMapping("/guardar")
-    public ResponseEntity<Producto> guardarProducto(@RequestBody ProductoDTO dto){
+    public ResponseEntity<Producto> guardarProducto(@Valid  @RequestBody ProductoDTO dto){
         Producto prodNuevo = productoService.registrarProducto(dto);
         return ResponseEntity.ok(prodNuevo);
+    }
+
+    /*------------Método para agregar productos a la API COMPRAS------------*/
+    @PostMapping("/lista")
+    public ResponseEntity<List<ProdAgregarDTO>> listaProductosCompra(@RequestBody List<String> codigos){
+        List<ProdAgregarDTO> prods = productoService.obtenerPorCodigos(codigos);
+        return ResponseEntity.ok(prods);
     }
 
     /*##-------------------------------METODOS PUT-------------------------------##*/

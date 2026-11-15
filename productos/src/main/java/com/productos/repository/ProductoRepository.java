@@ -15,6 +15,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
     /*Filtrar productos por código */
     Producto findByCodigo(String codigo);
     Producto deleteByCodigo(String codigo);
+    List<Producto> findByCodigoIn(List<String> codigos);
 
     /*Filtrar productos por el código de la categoría */
     @Query("SELECT p FROM Producto p WHERE p.categoria.codigoCategoria = :codigoCategoria")
