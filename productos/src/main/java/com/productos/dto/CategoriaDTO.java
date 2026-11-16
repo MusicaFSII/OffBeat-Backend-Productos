@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor 
 @AllArgsConstructor 
 public class CategoriaDTO {
+    private String codigo;
     private String nombre;
 }

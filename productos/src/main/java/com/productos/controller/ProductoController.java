@@ -3,6 +3,7 @@ package com.productos.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import com.productos.service.ProductoService;
 
 import jakarta.validation.Valid;
 
+@CrossOrigin(origins = "*")
 @RestController 
 @RequestMapping("/api/v1/productos")
 public class ProductoController {
@@ -33,8 +35,8 @@ public class ProductoController {
 
     /*------------Método para obtener todos los productos (EndPoint base)------------*/
     @GetMapping 
-    public ResponseEntity<List<Producto>> obtenerProductos(){
-        List<Producto> prod = productoService.obtenerProductos();
+    public ResponseEntity<List<ProductoDTO>> obtenerProductos(){
+        List<ProductoDTO> prod = productoService.obtenerProductos();
         return ResponseEntity.ok(prod);
     }
 
@@ -46,7 +48,7 @@ public class ProductoController {
     }
 
     /*------------Método para obtener todos los productos de una categoría------------*/
-    @GetMapping("/{codigoCategoria}")
+    @GetMapping("/categoria/{codigoCategoria}")
     public ResponseEntity<List<Producto>> obtenerProductosByIdCategoria(@PathVariable("codigoCategoria") String codigoCategoria){
         List<Producto> prod = productoService.obtenerProductosByCodigoCategoria(codigoCategoria);
         return ResponseEntity.ok(prod);

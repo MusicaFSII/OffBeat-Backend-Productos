@@ -30,16 +30,9 @@ public class ProductoMapper {
         producto.setImagenProducto(dto.getImagenUrl());
 
         Categoria categoria = categoriaRepository.findByCodigoCategoria(dto.getCodigoCategoria());
-        producto.setCategoria(categoria);
         
-        if(dto.getEnOferta() !=null && !dto.getEnOferta().isEmpty()){
-            if(dto.getEnOferta().equalsIgnoreCase("si")){
-                producto.setEnOferta(true);
-            }else{
-                producto.setEnOferta(false);
-            }
-        } 
-
+        producto.setCategoria(categoria);
+        producto.setEnOferta(dto.getEnOferta());
         producto.setPorcOferta(dto.getPorcOferta() != null ? dto.getPorcOferta() : 0); 
 
         return producto;

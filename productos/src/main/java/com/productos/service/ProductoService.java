@@ -24,8 +24,8 @@ public class ProductoService {
     /*##-------------------------------METODOS PARA OBTENER PRODUCTOS (GET)-------------------------------##*/
 
     /*------------Método para obtener todos los productos------------*/
-    public List<Producto> obtenerProductos(){
-        return productoRepo.findAll();
+    public List<ProductoDTO> obtenerProductos(){
+        return productoRepo.findAllDtos();
     }
 
     /*------------Método para obtener productos por el código------------*/

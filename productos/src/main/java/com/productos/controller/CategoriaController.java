@@ -3,6 +3,7 @@ package com.productos.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import com.productos.service.CategoriaService;
 
 @RestController 
 @RequestMapping("/api/v1/categorias")
+@CrossOrigin(origins = "*")
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
@@ -30,8 +32,8 @@ public class CategoriaController {
 
     /*------------Método para obtener todas las categorías (EndPoint base)------------*/
     @GetMapping
-    public ResponseEntity<List<Categoria>> obtenerProductos(){
-        List<Categoria> cate = categoriaService.obtenerCategorias();
+    public ResponseEntity<List<CategoriaDTO>> obtenerProductos(){
+        List<CategoriaDTO> cate = categoriaService.obtenerCategorias();
         return ResponseEntity.ok(cate);
     }
 

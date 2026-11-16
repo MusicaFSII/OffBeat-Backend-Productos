@@ -9,6 +9,8 @@ import com.productos.dto.CategoriaDTO;
 import com.productos.model.Categoria;
 import com.productos.repository.CategoriaRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service 
 public class CategoriaService {
 
@@ -17,8 +19,8 @@ public class CategoriaService {
     private CategoriaRepository categoriaRepo;
 
     /*------------Método para obtener todos las categorías------------*/
-    public List<Categoria> obtenerCategorias(){
-        return categoriaRepo.findAll();
+    public List<CategoriaDTO> obtenerCategorias(){
+        return categoriaRepo.findAllByDtos();
     }
 
     /*------------Método para agregar nuevas categorías------------*/
@@ -46,6 +48,7 @@ public class CategoriaService {
 
     /*------------Método para eliminar categorías------------*/
 
+    @Transactional 
     public Categoria eliminarCategorias(String codigoCategoria){
         return categoriaRepo.deleteByCodigoCategoria(codigoCategoria);
     }

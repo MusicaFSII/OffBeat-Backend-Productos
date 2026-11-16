@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor 
 @AllArgsConstructor 
 public class ProductoDTO {
+    private String codigo;
     private String nombre;
     private String descripcion;
     private Double precio;
     private Integer stock;
     private String imagenUrl;
-    private String codigoCategoria;
-    private String enOferta;
+    private Boolean enOferta;
     private Integer porcOferta;
+    private String codigoCategoria;
+    private String nombreCategoria;
 }
