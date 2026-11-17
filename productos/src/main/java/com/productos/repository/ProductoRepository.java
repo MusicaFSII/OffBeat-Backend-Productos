@@ -28,6 +28,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
         )
         FROM Producto p
         JOIN p.categoria c
+
+        ORDER BY p.idProducto
         """)
     List<ProductoDTO> findAllDtos();
     /*Filtrar productos por código */

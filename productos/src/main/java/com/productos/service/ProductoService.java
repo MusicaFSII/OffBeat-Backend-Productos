@@ -12,6 +12,8 @@ import com.productos.mapper.ProductoMapper;
 import com.productos.model.Producto;
 import com.productos.repository.ProductoRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service 
 public class ProductoService {
 
@@ -88,6 +90,8 @@ public class ProductoService {
     /*##-------------------------------METODOS PARA ELIMINAR PRODUCTOS (DELETE)-------------------------------##*/
 
     /*------------Método para eliminar productos------------*/
+
+    @Transactional 
     public String eliminarProducto(String codigo){
         productoRepo.deleteByCodigo(codigo);
         return "El producto " + codigo + " ha sido eliminado";
