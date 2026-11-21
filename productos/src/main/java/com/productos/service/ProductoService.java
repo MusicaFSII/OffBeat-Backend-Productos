@@ -6,15 +6,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.productos.dto.ProdAgregarDTO;
 import com.productos.dto.ProductoCreateDTO;
 import com.productos.dto.ProductoDTO;
 import com.productos.dto.ProductoUpdateDTO;
+import com.productos.exception.ResourceNotFoundException;
 import com.productos.mapper.ProductoMapper;
 import com.productos.model.Producto;
 import com.productos.repository.ProductoRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service 
 public class ProductoService {
@@ -28,6 +29,14 @@ public class ProductoService {
     @Autowired
     private FileStorageService storage;
 
+    public ProductoService(ProductoRepository productoRepo,
+                           ProductoMapper productoMapper,
+                           FileStorageService storage) {
+        this.productoRepo = productoRepo;
+        this.productoMapper = productoMapper;
+        this.storage = storage;
+    }
+
     /*##-------------------------------METODOS PARA OBTENER PRODUCTOS (GET)-------------------------------##*/
 
     /*------------Método para obtener todos los productos------------*/
@@ -39,6 +48,10 @@ public class ProductoService {
     /*------------Método para obtener productos por el código------------*/
     @Transactional(readOnly = true)
     public ProductoDTO obtenerProductosByCodigo(String codigo){
+        Producto producto = productoRepo.findByCodigo(codigo);
+        if (producto == null) {
+            throw new ResourceNotFoundException("No existe el producto " + codigo);
+        }
         return productoMapper.toDTO(productoRepo.findByCodigo(codigo));
     }
 
@@ -85,7 +98,7 @@ public class ProductoService {
     public ProductoDTO actualizarProducto(String codigo, ProductoUpdateDTO dto) throws IOException {
     Producto existing = productoRepo.findByCodigo(codigo);
     if (existing == null) {
-        return null;
+        throw new ResourceNotFoundException("No existe el producto " + codigo);
     }
 
     productoMapper.actualizarEntity(existing, dto);
@@ -104,8 +117,11 @@ public class ProductoService {
     /*------------Método para eliminar productos------------*/
 
     @Transactional 
-    public String eliminarProducto(String codigo){
-        productoRepo.deleteByCodigo(codigo);
-        return "El producto " + codigo + " ha sido eliminado";
+    public void eliminarProducto(String codigo) {
+        Producto existing = productoRepo.findByCodigo(codigo);
+        if (existing == null) {
+            throw new ResourceNotFoundException("No existe el producto " + codigo);
+        }
+        productoRepo.delete(existing);
     }
 }

@@ -23,27 +23,27 @@ public class Producto {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_producto", nullable =false)
-    private int idProducto;
+    private Integer idProducto;
 
     @Column(name="codigo", unique = true)
     private String codigo;
 
-    @Column(name="nombre", unique = true, nullable =false)
+    @Column(name="nombre", unique = true, nullable = false)
     private String nombre;
 
-    @Column(name="descripcion", nullable =false)
+    @Column(name="descripcion", nullable = false)
     private String descripcion;
 
-    @Column(name="precio", nullable =false)
+    @Column(name="precio", nullable = false)
     private Double precio;    
 
-    @Column(name="stock", nullable =false)
+    @Column(name="stock", nullable = false)
     private int stock = 0;
 
-    @Column(name="imagen_producto", nullable =false)
+    @Column(name="imagen_producto", nullable = false)
     private String imagenProducto;
 
-    @Column(name="en_oferta", nullable =false)
+    @Column(name="en_oferta", nullable = false)
     private boolean enOferta;
 
     @Column(name="porc_oferta")
