@@ -1,5 +1,6 @@
 package com.productos.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.productos.dto.ProdAgregarDTO;
+import com.productos.dto.ProductoCreateDTO;
 import com.productos.dto.ProductoDTO;
+import com.productos.dto.ProductoUpdateDTO;
 import com.productos.mapper.ProductoMapper;
 import com.productos.model.Producto;
 import com.productos.repository.ProductoRepository;
-
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service 
 public class ProductoService {
@@ -23,16 +25,21 @@ public class ProductoService {
     @Autowired 
     private ProductoMapper productoMapper;
 
+    @Autowired
+    private FileStorageService storage;
+
     /*##-------------------------------METODOS PARA OBTENER PRODUCTOS (GET)-------------------------------##*/
 
     /*------------Método para obtener todos los productos------------*/
+    @Transactional(readOnly = true)
     public List<ProductoDTO> obtenerProductos(){
-        return productoRepo.findAllDtos();
+        return productoRepo.findAll().stream().map(productoMapper::toDTO).toList();
     }
 
     /*------------Método para obtener productos por el código------------*/
-    public Producto obtenerProductosByCodigo(String codigo){
-        return productoRepo.findByCodigo(codigo);
+    @Transactional(readOnly = true)
+    public ProductoDTO obtenerProductosByCodigo(String codigo){
+        return productoMapper.toDTO(productoRepo.findByCodigo(codigo));
     }
 
     /*------------Método para obtener productos por id de categoría------------*/
@@ -41,20 +48,21 @@ public class ProductoService {
     }
 
     /*------------Método para obtener productos que tiene ofertas activas------------*/
-    public List<Producto> obtenerProductosOfertas(){
-        return productoRepo.findProductosOfertas();
+    public List<ProductoDTO> obtenerProductosOfertas(){
+        return productoRepo.findProductosOfertas().stream().map(productoMapper::toDTO).toList();
     }
 
 
     /*##-------------------------------METODOS PARA AGREGAR PRODUCTOS (POST)-------------------------------*/
 
     /*------------Método para agregar nuevos productos------------*/
-    public Producto registrarProducto(ProductoDTO dto){
+    @Transactional
+    public ProductoDTO registrarProducto(ProductoCreateDTO dto) throws IOException {
         Producto producto = productoMapper.toEntity(dto);
-        Producto guardado = productoRepo.save(producto);
-
-        guardado.setCodigo("PR-"+guardado.getIdProducto());
-        return productoRepo.save(guardado);
+        producto.setImagenProducto(storage.guardar(dto.getImagen()));
+        producto = productoRepo.save(producto);
+        producto.setCodigo("PR-" + producto.getIdProducto());
+        return productoMapper.toDTO(producto);
     }
 
     /*------------Método para agregar productos a compras-----------*/
@@ -64,7 +72,8 @@ public class ProductoService {
                 .map(p -> new ProdAgregarDTO(
                     p.getCodigo(),
                     p.getNombre(),
-                    p.getPrecio()
+                    p.isEnOferta() 
+                    ? p.getPrecio() * (1 - p.getPorcOferta() / 100.0) : p.getPrecio()
                 ))
                 .collect(Collectors.toList());
     }
@@ -72,20 +81,23 @@ public class ProductoService {
     /*##-------------------------------METODOS PARA ACTUALIZAR PRODUCTOS (PUT)-------------------------------##*/
 
     /*------------Método para actualizar productos------------*/
-    public Producto actualizarProducto(String codigo, ProductoDTO dto){
-        Producto existing = productoRepo.findByCodigo(codigo);
-        if(existing == null){
-            return null;
-        }
-        Producto productoActualizar = productoMapper.toEntity(dto);
-        productoActualizar.setIdProducto(existing.getIdProducto());
-        productoActualizar.setCodigo(codigo);
-
-        if (dto.getImagenUrl() == null || dto.getImagenUrl().isEmpty()) {
-        productoActualizar.setImagenProducto(existing.getImagenProducto());
-        }
-        return productoRepo.save(productoActualizar);
+    @Transactional
+    public ProductoDTO actualizarProducto(String codigo, ProductoUpdateDTO dto) throws IOException {
+    Producto existing = productoRepo.findByCodigo(codigo);
+    if (existing == null) {
+        return null;
     }
+
+    productoMapper.actualizarEntity(existing, dto);
+
+    if (dto.getImagen() != null && !dto.getImagen().isEmpty()) {
+        String anterior = existing.getImagenProducto();
+        existing.setImagenProducto(storage.guardar(dto.getImagen()));
+        storage.eliminar(anterior);
+    }
+
+    return productoMapper.toDTO(productoRepo.save(existing));
+}
 
     /*##-------------------------------METODOS PARA ELIMINAR PRODUCTOS (DELETE)-------------------------------##*/
 

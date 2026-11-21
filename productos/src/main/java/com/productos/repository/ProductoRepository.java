@@ -2,6 +2,7 @@ package com.productos.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,25 +14,10 @@ import com.productos.model.Producto;
 @Repository 
 public interface ProductoRepository extends JpaRepository<Producto, Integer>{
 
-    @Query("""
-        SELECT new com.productos.dto.ProductoDTO(
-            p.codigo,
-            p.nombre,
-            p.descripcion,
-            p.precio,
-            p.stock,
-            p.imagenProducto,
-            p.enOferta,
-            p.porcOferta,
-            c.codigoCategoria,
-            c.nombreCategoria
-        )
-        FROM Producto p
-        JOIN p.categoria c
+    @Override
+    @EntityGraph(attributePaths = "categoria")
+    List<Producto> findAll();
 
-        ORDER BY p.idProducto
-        """)
-    List<ProductoDTO> findAllDtos();
     /*Filtrar productos por código */
     Producto findByCodigo(String codigo);
     Producto deleteByCodigo(String codigo);
@@ -42,8 +28,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
     List<Producto> findByCodigoCategoria(@Param("codigoCategoria") String codigoCategoria);
 
     /*Filtrar productos si es que tienen ofertas activas */
-    @Query("SELECT p FROM Producto p WHERE p.enOferta = true")
+    @Query("SELECT p FROM Producto p JOIN FETCH p.categoria WHERE p.enOferta = true")
     List<Producto> findProductosOfertas();
-
-    
+ 
 }

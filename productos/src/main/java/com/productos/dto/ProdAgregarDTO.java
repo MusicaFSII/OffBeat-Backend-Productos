@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class ProdAgregarDTO {
     private String codigo;
     private String nombre;
-    private Double precio;
+    private Double precioFinal;
 }
