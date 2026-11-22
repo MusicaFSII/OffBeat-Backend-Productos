@@ -14,6 +14,7 @@ public class ProductoMapper {
 
     private final CategoriaRepository categoriaRepository;
 
+
     public ProductoMapper(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
     }
@@ -40,47 +41,50 @@ public class ProductoMapper {
     } 
 
     public ProductoDTO toDTO(Producto p) {
-    if (p == null) {
-        return null;
-    }
+        if (p == null) {
+            return null;
+        }
 
-    double precioIngresado = p.getPrecio();
-    int descuento = p.isEnOferta() ? p.getPorcOferta() : 0;
+        double precioIngresado = p.getPrecio();
+        int descuento = p.isEnOferta() ? p.getPorcOferta() : 0;
 
-    double precioFinal = Math.round(precioIngresado * (100 - descuento) / 100.0);
-    double neto = Math.round(precioFinal / (1 + 0.19));
+        double precioFinal = Math.round(precioIngresado * (100 - descuento) / 100.0);
+        double neto = Math.round(precioFinal / (1 + 0.19));
 
-    ProductoDTO dto = new ProductoDTO();
-    dto.setCodigo(p.getCodigo());
-    dto.setNombre(p.getNombre());
-    dto.setDescripcion(p.getDescripcion());
-    dto.setPrecio(precioIngresado);
-    dto.setPrecioFinal(precioFinal);
-    dto.setPrecioIva(precioFinal - neto);
-    dto.setStock(p.getStock());
-    dto.setImagenUrl(p.getImagenProducto());
-    dto.setEnOferta(p.isEnOferta());
-    dto.setPorcOferta(p.getPorcOferta());
-    dto.setCodigoCategoria(p.getCategoria().getCodigoCategoria());
-    dto.setNombreCategoria(p.getCategoria().getNombreCategoria());
-    return dto;
+        ProductoDTO dto = new ProductoDTO();
+        dto.setCodigo(p.getCodigo());
+        dto.setNombre(p.getNombre());
+        dto.setDescripcion(p.getDescripcion());
+        dto.setPrecio(precioIngresado);
+        dto.setPrecioFinal(precioFinal);
+        dto.setPrecioIva(precioFinal - neto);
+        dto.setStock(p.getStock());
+        dto.setImagenUrl(
+            p.getImagenProducto() == null
+                ? null
+                : "/uploads/productos/" + p.getImagenProducto()
+        );
+        dto.setEnOferta(p.isEnOferta());
+        dto.setPorcOferta(p.getPorcOferta());
+        dto.setCodigoCategoria(p.getCategoria().getCodigoCategoria());
+        dto.setNombreCategoria(p.getCategoria().getNombreCategoria());
+        return dto;
     }
 
     public void actualizarEntity(Producto existing, ProductoUpdateDTO dto) {
-    if (dto.getNombre() != null && !dto.getNombre().isBlank()) existing.setNombre(dto.getNombre());
-    if (dto.getDescripcion() != null && !dto.getDescripcion().isBlank()) existing.setDescripcion(dto.getDescripcion());
-    if (dto.getPrecio() != null) existing.setPrecio(dto.getPrecio());
-    if (dto.getStock() != null) existing.setStock(dto.getStock());
-    if (dto.getEnOferta() != null) existing.setEnOferta(dto.getEnOferta());
-    if (dto.getPorcOferta() != null) existing.setPorcOferta(dto.getPorcOferta());
+        if (dto.getNombre() != null && !dto.getNombre().isBlank()) existing.setNombre(dto.getNombre());
+        if (dto.getDescripcion() != null && !dto.getDescripcion().isBlank()) existing.setDescripcion(dto.getDescripcion());
+        if (dto.getPrecio() != null) existing.setPrecio(dto.getPrecio());
+        if (dto.getStock() != null) existing.setStock(dto.getStock());
+        if (dto.getEnOferta() != null) existing.setEnOferta(dto.getEnOferta());
+        if (dto.getPorcOferta() != null) existing.setPorcOferta(dto.getPorcOferta());
 
-    if (dto.getCodigoCategoria() != null && !dto.getCodigoCategoria().isBlank()) {
-        Categoria categoria = categoriaRepository.findByCodigoCategoria(dto.getCodigoCategoria());
-        if (categoria == null) {
-            throw new IllegalArgumentException("No existe la categoría " + dto.getCodigoCategoria());
+        if (dto.getCodigoCategoria() != null && !dto.getCodigoCategoria().isBlank()) {
+            Categoria categoria = categoriaRepository.findByCodigoCategoria(dto.getCodigoCategoria());
+            if (categoria == null) {
+                throw new IllegalArgumentException("No existe la categoría " + dto.getCodigoCategoria());
+            }
+            existing.setCategoria(categoria);
         }
-        existing.setCategoria(categoria);
     }
-}
-
 }
