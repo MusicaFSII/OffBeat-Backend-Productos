@@ -23,6 +23,7 @@ import com.productos.dto.ProductoDTO;
 import com.productos.dto.ProductoUpdateDTO;
 import com.productos.model.Producto;
 import com.productos.service.ProductoService;
+import com.productos.dto.ItemStockDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -109,6 +110,23 @@ public class ProductoController {
         return ResponseEntity.ok(prods);
     }
 
+    @Operation(summary = "Descontar stock", description = "Descuenta stock de varios productos en una sola transacción")
+    @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Stock descontado"),
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado"),
+    @ApiResponse(responseCode = "409", description = "Stock insuficiente")
+    })
+    @PostMapping("/descontar-stock")
+    public ResponseEntity<Void> descontarStock(@Valid @RequestBody List<ItemStockDTO> items) {
+        productoService.descontarStock(items);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reponer-stock")
+    public ResponseEntity<Void> reponerStock(@Valid @RequestBody List<ItemStockDTO> items) {
+        productoService.reponerStock(items);
+        return ResponseEntity.noContent().build();
+    }
     /*##-------------------------------METODOS PUT-------------------------------##*/
 
     /*------------Método para guardar nuevos productos------------*/

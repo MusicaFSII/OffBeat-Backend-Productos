@@ -16,6 +16,8 @@ import com.productos.exception.ResourceNotFoundException;
 import com.productos.mapper.ProductoMapper;
 import com.productos.model.Producto;
 import com.productos.repository.ProductoRepository;
+import com.productos.dto.ItemStockDTO;
+import com.productos.exception.StockInsuficienteException;
 
 @Service 
 public class ProductoService {
@@ -96,22 +98,44 @@ public class ProductoService {
     /*------------Método para actualizar productos------------*/
     @Transactional
     public ProductoDTO actualizarProducto(String codigo, ProductoUpdateDTO dto) throws IOException {
-    Producto existing = productoRepo.findByCodigo(codigo);
-    if (existing == null) {
-        throw new ResourceNotFoundException("No existe el producto " + codigo);
+        Producto existing = productoRepo.findByCodigo(codigo);
+        if (existing == null) {
+            throw new ResourceNotFoundException("No existe el producto " + codigo);
+        }
+
+        productoMapper.actualizarEntity(existing, dto);
+
+        if (dto.getImagen() != null && !dto.getImagen().isEmpty()) {
+            String anterior = existing.getImagenProducto();
+            existing.setImagenProducto(storage.guardar(dto.getImagen()));
+            storage.eliminar(anterior);
+        }
+
+        return productoMapper.toDTO(productoRepo.save(existing));
     }
 
-    productoMapper.actualizarEntity(existing, dto);
-
-    if (dto.getImagen() != null && !dto.getImagen().isEmpty()) {
-        String anterior = existing.getImagenProducto();
-        existing.setImagenProducto(storage.guardar(dto.getImagen()));
-        storage.eliminar(anterior);
+    /*------------Método para descontar stock al comprar------------*/
+    @Transactional
+    public void descontarStock(List<ItemStockDTO> items) {
+        for (ItemStockDTO item : items) {
+            int filas = productoRepo.descontarStock(item.getCodigo(), item.getCantidad());
+            if (filas == 0) {
+                if (productoRepo.findByCodigo(item.getCodigo()) == null) {
+                    throw new ResourceNotFoundException("No existe el producto " + item.getCodigo());
+                }
+                throw new StockInsuficienteException(
+                    "Stock insuficiente para " + item.getCodigo());
+            }
+        }
     }
 
-    return productoMapper.toDTO(productoRepo.save(existing));
-}
-
+    /*------------Método para reponer stock (compra fallida / anulada)------------*/
+    @Transactional
+    public void reponerStock(List<ItemStockDTO> items) {
+        for (ItemStockDTO item : items) {
+            productoRepo.reponerStock(item.getCodigo(), item.getCantidad());
+        }
+    }
     /*##-------------------------------METODOS PARA ELIMINAR PRODUCTOS (DELETE)-------------------------------##*/
 
     /*------------Método para eliminar productos------------*/
