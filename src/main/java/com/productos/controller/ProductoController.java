@@ -30,7 +30,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "*")
 @RestController 
 @RequestMapping("/api/v1/productos")
 public class ProductoController {
